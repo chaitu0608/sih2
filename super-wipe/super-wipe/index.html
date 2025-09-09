@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TrustWipe</title>
+    <link rel="stylesheet" href="src/styles/index.css" />
+  </head>
+  <body>
+    <div class="app-container">
+      <header>
+        <h1>TrustWipe</h1>
+        <p>Securely sanitize drives with NIST 800-88 compliance.</p>
+      </header>
+      <main>
+        <div class="card">
+          <h2>Select Drive</h2>
+          <label for="drive-select">Available Drives:</label>
+          <select id="drive-select">
+            <!-- Drives will be dynamically populated -->
+          </select>
+        </div>
+        <div class="card">
+          <h2>Sanitization Method</h2>
+          <label for="method-select">Choose Method:</label>
+          <select id="method-select">
+            <option value="sanitize">Sanitize (Recommended)</option>
+            <option value="overwrite">Overwrite with Zeros</option>
+          </select>
+        </div>
+        <div class="card">
+          <button id="wipe-button" class="primary-button">Start Wipe</button>
+          <p id="status-message"></p>
+          <p id="os-message">Detecting OS...</p>
+        </div>
+      </main>
+      <footer>
+        <p>&copy; 2025 TrustWipe. All rights reserved.</p>
+      </footer>
+    </div>
+    <script src="src/renderer.js"></script>
+  </body>
+</html>

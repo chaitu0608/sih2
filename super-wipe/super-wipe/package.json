@@ -1,0 +1,23 @@
+{
+  "name": "super-wipe",
+  "version": "1.0.0",
+  "description": "An Electron application for securely wiping data.",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "keywords": [
+    "Electron",
+    "Wipe",
+    "Data Security"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "electron": "^25.0.0"
+  },
+  "devDependencies": {
+    "electron-builder": "^24.0.0"
+  }
+}
