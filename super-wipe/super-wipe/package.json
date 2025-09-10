@@ -5,7 +5,9 @@
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder"
+    "build": "electron-builder",
+    "test": "node test-backend.js",
+    "dev": "NODE_ENV=development electron ."
   },
   "keywords": [
     "Electron",
@@ -15,7 +17,8 @@
   "author": "Your Name",
   "license": "MIT",
   "dependencies": {
-    "electron": "^25.0.0"
+    "electron": "^25.0.0",
+    "drivelist": "^9.2.4"
   },
   "devDependencies": {
     "electron-builder": "^24.0.0"

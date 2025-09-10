@@ -1,0 +1,50 @@
+{
+  "app": {
+    "name": "TrustWipe",
+    "version": "1.0.0",
+    "description": "Secure Drive Sanitization Tool"
+  },
+  "security": {
+    "authentication": {
+      "username": "admin",
+      "password": "password123",
+      "maxAttempts": 3,
+      "attemptWindow": 300000
+    },
+    "validation": {
+      "username": {
+        "minLength": 3,
+        "maxLength": 50,
+        "pattern": "^[a-zA-Z0-9_-]+$"
+      },
+      "password": {
+        "minLength": 6,
+        "maxLength": 100
+      },
+      "drive": {
+        "maxLength": 200,
+        "pattern": "^(/dev/[a-zA-Z0-9]+|\\\\\\\\.\\\\PhysicalDrive[0-9]+|[A-Z]:\\\\?)$"
+      }
+    }
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "logs/app.log",
+    "maxSize": "10MB",
+    "maxFiles": 5
+  },
+  "wipe": {
+    "methods": ["sanitize", "overwrite"],
+    "timeout": 3600000,
+    "defaultMethod": "sanitize"
+  },
+  "ui": {
+    "window": {
+      "width": 1000,
+      "height": 700,
+      "minWidth": 800,
+      "minHeight": 600
+    },
+    "refreshInterval": 5000
+  }
+}
