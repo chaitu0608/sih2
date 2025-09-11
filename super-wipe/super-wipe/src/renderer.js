@@ -4,6 +4,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const wipeButton = document.getElementById("wipe-button");
   const statusMessage = document.getElementById("status-message");
   const osMessage = document.getElementById("os-message");
+  const refreshButton = document.getElementById("refresh-drives");
+  const usernameInput = document.getElementById("username-input");
+  const passwordInput = document.getElementById("password-input");
+  const driveDetailsPanel = document.getElementById("drive-details");
+  const driveDevice = document.getElementById("drive-device");
+  const driveSize = document.getElementById("drive-size");
+  const driveMountpoint = document.getElementById("drive-mountpoint");
+  const driveType = document.getElementById("drive-type");
 
   // Check the OS and display the result
   window.api.send("check-os");
@@ -27,6 +35,41 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // Manual refresh button
+  if (refreshButton) {
+    refreshButton.addEventListener("click", () => {
+      refreshDrives();
+    });
+  }
+
+  // Drive selection change → fetch details
+  driveSelect.addEventListener("change", () => {
+    const selectedDrive = driveSelect.value;
+    if (!selectedDrive) {
+      driveDetailsPanel.style.display = "none";
+      return;
+    }
+    window.api.send("get-drive-details", selectedDrive);
+  });
+
+  // Receive drive details
+  window.api.receive("drive-details", (details) => {
+    if (!details || details.error) {
+      driveDetailsPanel.style.display = "none";
+      return;
+    }
+    driveDevice.textContent = details.device || "-";
+    driveSize.textContent = details.sizeFormatted || "-";
+    driveMountpoint.textContent = (details.mountpoints && details.mountpoints[0] && details.mountpoints[0].path) || "-";
+    const types = [];
+    if (details.isUSB) types.push("USB");
+    if (details.isRemovable) types.push("Removable");
+    if (details.isSystem) types.push("System");
+    if (details.isVirtual) types.push("Virtual");
+    driveType.textContent = types.join(", ") || "-";
+    driveDetailsPanel.style.display = "block";
+  });
+
   // Refresh drives every 5 seconds
   setInterval(refreshDrives, 5000);
   refreshDrives(); // Initial fetch
@@ -40,8 +83,8 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const username = prompt("Enter username:");
-    const password = prompt("Enter password:");
+    const username = usernameInput ? usernameInput.value.trim() : "";
+    const password = passwordInput ? passwordInput.value : "";
 
     if (!username || !password) {
       statusMessage.textContent = "Username and password are required.";
