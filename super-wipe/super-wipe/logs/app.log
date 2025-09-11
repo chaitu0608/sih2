@@ -1,0 +1,18 @@
+[2025-09-10T03:35:31.860Z] [INFO] Application window created
+[2025-09-10T03:35:32.317Z] [INFO] OS Detection: macOS (Limited Support) | Data: {"platform":"darwin","arch":"arm64","version":"v20.18.1","supported":false}
+[2025-09-10T03:35:32.319Z] [INFO] Fetching drive list
+[2025-09-10T03:35:32.382Z] [INFO] Found 0 valid drives
+[2025-09-10T03:35:37.315Z] [INFO] Fetching drive list
+[2025-09-10T03:35:37.374Z] [INFO] Found 0 valid drives
+[2025-09-10T03:35:42.316Z] [INFO] Fetching drive list
+[2025-09-10T03:35:42.372Z] [INFO] Found 0 valid drives
+[2025-09-10T03:35:47.488Z] [INFO] Fetching drive list
+[2025-09-10T03:35:47.544Z] [INFO] Found 0 valid drives
+[2025-09-10T03:35:52.487Z] [INFO] Fetching drive list
+[2025-09-10T03:35:52.541Z] [INFO] Found 0 valid drives
+[2025-09-10T03:35:57.487Z] [INFO] Fetching drive list
+[2025-09-10T03:35:57.541Z] [INFO] Found 0 valid drives
+[2025-09-10T03:36:02.486Z] [INFO] Fetching drive list
+[2025-09-10T03:36:02.541Z] [INFO] Found 0 valid drives
+[2025-09-10T03:36:07.487Z] [INFO] Fetching drive list
+[2025-09-10T03:36:07.541Z] [INFO] Found 0 valid drives

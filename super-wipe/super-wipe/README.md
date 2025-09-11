@@ -1,201 +1,103 @@
-# TrustWipe - Secure Drive Sanitization Tool
+# Super Wipe — USB Plug‑and‑Play Drive Sanitizer (Windows & Linux)
 
-A comprehensive Electron-based application for securely wiping drives with NIST 800-88 compliance, featuring enhanced security, logging, and cross-platform support.
+An Electron desktop app that securely wipes external USB drives. Designed for plug‑and‑play use on Windows and Linux with strong safety checks, confirmations, and audit logging. Ideal for field technicians and IT admins who need a simple, consistent workflow.
 
-## Features
+## Why this tool?
 
-### 🔒 Security Features
-- **Input Validation**: Comprehensive validation for all user inputs
-- **Rate Limiting**: Prevents abuse with configurable attempt limits
-- **Authentication**: Secure username/password authentication
-- **Confirmation Dialogs**: User confirmation before destructive operations
-- **Audit Logging**: Complete operation logging for compliance
+- **USB‑focused**: Detects attached removable/USB drives for safer selection.
+- **Cross‑platform**: Windows (PowerShell) and Linux (bash) support.
+- **Two wipe modes**: Hardware sanitize (ATA/NVMe) or software overwrite (zeros).
+- **Built‑in safety**: Input validation, confirmations, rate limiting, and logging.
 
-### 🖥️ Cross-Platform Support
-- **Windows**: PowerShell-based wiping with cipher and custom overwrite
-- **Linux**: Native hdparm/nvme-cli support for hardware-level sanitization
-- **macOS**: Limited support (development mode)
+## Quick Start
 
-### 🧹 Wipe Methods
-- **Sanitize**: Hardware-level sanitization using ATA/NVMe commands
-- **Overwrite**: Software-based zero-fill overwrite
-
-### 📊 Enhanced Backend
-- **Real-time Drive Detection**: Automatic drive enumeration and filtering
-- **Progress Monitoring**: Real-time operation status updates
-- **Error Handling**: Comprehensive error handling and recovery
-- **Logging System**: Detailed audit trails for compliance
-
-## Installation
-
-1. **Clone the repository**
+1. Clone and install
    ```bash
-   git clone <repository-url>
-   cd super-wipe
-   ```
-
-2. **Install dependencies**
-   ```bash
+   git clone <your-repo-url>
+   cd sih2/super-wipe/super-wipe
    npm install
    ```
-
-3. **Run the application**
+2. Run
    ```bash
    npm start
    ```
+3. Plug in a USB drive, select it, choose a method, authenticate, and confirm.
 
 ## Usage
 
-### Basic Operation
-1. Launch the application
-2. Select a target drive from the dropdown
-3. Choose a wipe method (Sanitize or Overwrite)
-4. Enter authentication credentials
-5. Confirm the operation
-6. Monitor progress in the status area
+1. Plug in the target USB drive.
+2. Launch the app and select the drive from the list.
+3. Choose a method:
+   - **Sanitize**: Uses `hdparm`/`nvme-cli` on Linux, `cipher /w` on Windows for free‑space wipe.
+   - **Overwrite**: Zero‑fill overwrite (works broadly; may be slower).
+4. Enter credentials when prompted:
+   - Username: `admin`
+   - Password: `password123`
+   - Note: Change these for production deployments.
+5. Confirm in the warning dialog. Monitor status and logs.
 
-### Authentication
-- **Username**: `admin`
-- **Password**: `password123`
+## Requirements
 
-*Note: Change these credentials in production environments*
+- Node.js 16+
+- Windows 10/11 or Linux with `bash`
+- Linux: `hdparm` and/or `nvme-cli` for sanitize; `pv` optional for progress
 
-### Wipe Methods
+## Features
 
-#### Sanitize (Recommended)
-- Uses hardware-level ATA/NVMe sanitization commands
-- Faster and more secure
-- Requires drive support for sanitization commands
-- NIST 800-88 compliant
+- **Drive detection**: Enumerates drives and prioritizes removable/USB devices.
+- **Safety controls**: Validation, confirmation dialog, attempt rate limiting.
+- **Audit logs**: App logs in `logs/app.log`; script logs in temp directories.
+- **Renderer isolation**: Secure IPC via a preload bridge.
 
-#### Overwrite
-- Software-based zero-fill overwrite
-- Works on all drives
-- Slower but more universally compatible
-- Progress monitoring available
+## Scripts
 
-## Backend Architecture
+- `npm start` — Run the Electron app
+- `npm run build` — Build distributables (via electron‑builder)
+- `npm test` — Run backend test harness
 
-### Main Process (`src/main.js`)
-- **IPC Handlers**: Secure communication between renderer and main process
-- **Drive Detection**: Real-time drive enumeration using `drivelist`
-- **Input Validation**: Comprehensive validation and sanitization
-- **Rate Limiting**: Prevents abuse with configurable limits
-- **Logging**: Centralized logging system with file output
-- **Security**: Authentication and confirmation dialogs
-
-### Preload Script (`src/preload.js`)
-- **Context Bridge**: Secure API exposure to renderer
-- **Channel Validation**: Whitelist-based IPC channel management
-- **Security**: Prevents unauthorized access to Node.js APIs
-
-### Wipe Scripts
-- **Linux** (`wipe_linux.sh`): Enhanced bash script with logging and validation
-- **Windows** (`wipe_windows.ps1`): PowerShell script with comprehensive error handling
-
-## Security Considerations
-
-### Input Validation
-- Drive path format validation
-- Username/password format checking
-- Method validation against whitelist
-- Length and character restrictions
-
-### Rate Limiting
-- Maximum 3 attempts per 5-minute window
-- Per-client tracking
-- Automatic cleanup of old attempts
-
-### Logging
-- All operations logged with timestamps
-- Sensitive data redacted in logs
-- Log files stored in `logs/` directory
-- Audit trail for compliance
-
-### Authentication
-- Hardcoded credentials (change in production)
-- Session-based rate limiting
-- Failed attempt tracking
-
-## File Structure
+## Project Layout
 
 ```
 super-wipe/
-├── src/
-│   ├── main.js          # Main Electron process
-│   ├── preload.js       # Preload script for security
-│   ├── renderer.js      # Frontend logic
-│   └── styles/
-│       └── index.css    # Application styles
-├── logs/                # Log files (created at runtime)
-├── wipe_linux.sh        # Linux wipe script
-├── wipe_windows.ps1     # Windows wipe script
-├── package.json         # Dependencies and scripts
-├── index.html           # Main application UI
-└── README.md           # This file
+├─ src/
+│  ├─ main.js        # Electron main process (IPC, drive list, execution)
+│  ├─ preload.js     # Context bridge for secure IPC
+│  ├─ renderer.js    # UI logic (drive/method selection, status)
+│  └─ styles/
+│     └─ index.css
+├─ wipe_linux.sh     # Linux wipe script (sanitize/overwrite)
+├─ wipe_windows.ps1  # Windows wipe script (cipher/overwrite)
+├─ logs/             # Runtime logs
+├─ index.html
+├─ package.json
+└─ README.md
 ```
 
-## Development
+## Security Notes
 
-### Prerequisites
-- Node.js 16+ 
-- npm or yarn
-- Electron 25+
-
-### Scripts
-- `npm start`: Start the application in development mode
-- `npm run build`: Build the application for distribution
-
-### Environment Variables
-- `NODE_ENV=development`: Enables development features (DevTools)
+- The app prompts for confirmation before destructive actions.
+- Credentials are currently hardcoded for demo; update in production.
+- Logs redact sensitive fields in the Electron layer.
 
 ## Compliance
 
-This tool is designed to meet NIST 800-88 guidelines for media sanitization:
-- **Clear**: Basic file deletion
-- **Purge**: Overwrite with zeros
-- **Destroy**: Physical destruction (not implemented)
+Implements wipe strategies aligned with NIST 800‑88:
+- **Purge/Sanitize**: Hardware sanitization where supported (Linux).
+- **Clear/Overwrite**: Zero‑fill overwrite.
 
 ## Troubleshooting
 
-### Common Issues
-
-1. **Permission Denied**
-   - Ensure the application is run with appropriate privileges
-   - On Linux, the user may need sudo access for drive operations
-
-2. **Drive Not Detected**
-   - Check if the drive is properly connected
-   - Ensure the drive is not in use by other applications
-
-3. **Wipe Operation Fails**
-   - Check the log files in the `logs/` directory
-   - Verify drive permissions and availability
-   - Ensure required tools (hdparm, nvme-cli) are installed on Linux
-
-### Log Files
-- Application logs: `logs/app.log`
-- Wipe operation logs: `/tmp/wipe_*.log` (Linux) or `%TEMP%\wipe_*.log` (Windows)
+- On Linux, run with sufficient privileges for `hdparm`/`nvme` and `dd`.
+- Ensure the target drive is not mounted or in use.
+- Check logs:
+  - App: `logs/app.log`
+  - Linux: `/tmp/wipe_*.log`
+  - Windows: `%TEMP%\wipe_*.log`
 
 ## License
 
-MIT License - see LICENSE file for details.
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## Support
-
-For issues and questions:
-1. Check the troubleshooting section
-2. Review log files for error details
-3. Create an issue with detailed information
+MIT
 
 ---
 
-**⚠️ Warning**: This tool permanently destroys data. Always verify the target drive before proceeding. Use in a controlled environment and ensure you have proper backups of important data.
+⚠️ Warning: This tool permanently destroys data on the selected drive. Double‑check the target device and ensure backups before proceeding. Intended for controlled environments.
