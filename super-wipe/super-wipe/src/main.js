@@ -164,12 +164,26 @@ ipcMain.on("get-drives", async (event) => {
     log("INFO", "Fetching drive list");
     const drives = await drivelist.list();
     
-    // Filter and validate drives
+    log("INFO", `Raw drives found: ${drives.length}`, { drives: drives.map(d => ({ device: d.device, description: d.description, size: d.size })) });
+    
+    // Safer filtering: prefer removable/USB drives and exclude system disks
     const validDrives = drives.filter(drive => {
-      return drive.device && 
-             drive.description && 
-             drive.size > 0 && 
-             !drive.isSystem; // Exclude system drives
+      if (!drive.device || !drive.description || (typeof drive.size === 'number' && drive.size <= 0)) {
+        return false;
+      }
+      // Always exclude known system disks
+      if (drive.isSystem) {
+        return false;
+      }
+      // On Windows/Linux: restrict to removable or USB devices for safety
+      if (process.platform === 'win32' || process.platform === 'linux') {
+        return !!(drive.isRemovable || drive.isUSB);
+      }
+      // On macOS (dev only): be conservative and only list external/USB
+      if (process.platform === 'darwin') {
+        return !!(drive.isRemovable || drive.isUSB);
+      }
+      return false;
     });
     
     const driveList = validDrives.map((drive) => ({
@@ -178,13 +192,39 @@ ipcMain.on("get-drives", async (event) => {
       size: drive.size ? `${(drive.size / 1e9).toFixed(2)} GB` : "Unknown",
       mountpoint: drive.mountpoints?.[0]?.path || "N/A",
       isRemovable: drive.isRemovable || false,
+      isSystem: drive.isSystem || false,
+      isUSB: drive.isUSB || false,
+      isSCSI: drive.isSCSI || false,
+      isVirtual: drive.isVirtual || false,
+      rawSize: drive.size
     }));
     
-    log("INFO", `Found ${driveList.length} valid drives`);
+    log("INFO", `Found ${driveList.length} valid drives`, { driveList });
     event.sender.send("drives-list", driveList);
   } catch (error) {
     log("ERROR", "Failed to fetch drives", { error: error.message });
-    event.sender.send("drives-list", []);
+    
+    // Fallback for macOS if drivelist fails
+    if (process.platform === 'darwin') {
+      const fallbackDrives = [
+        {
+          name: "Macintosh HD (Fallback)",
+          path: "/dev/disk0",
+          size: "Unknown",
+          mountpoint: "/",
+          isRemovable: false,
+          isSystem: true,
+          isUSB: false,
+          isSCSI: false,
+          isVirtual: false,
+          rawSize: 0
+        }
+      ];
+      log("INFO", "Using fallback drive list for macOS");
+      event.sender.send("drives-list", fallbackDrives);
+    } else {
+      event.sender.send("drives-list", []);
+    }
   }
 });
 
